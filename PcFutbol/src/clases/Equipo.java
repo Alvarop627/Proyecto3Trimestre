@@ -2,10 +2,16 @@ package clases;
 
 import java.util.ArrayList;
 
+import excepciones.JugadorNoPerteneceAlEquipoException;
+import excepciones.MuyPocosJugadoresException;
+
 public class Equipo {
 	String nombre;
 	private int puntos;
+	private int golesAFavor;
+	private int golesEnContra;
 	private ArrayList<Jugador> plantilla;
+	private static PosicionJugador[] posiciones442= {PosicionJugador.POR,PosicionJugador.LD,PosicionJugador.LI,PosicionJugador.DCI,PosicionJugador.DCD,PosicionJugador.MD,PosicionJugador.MI,PosicionJugador.MCD,PosicionJugador.MCI,PosicionJugador.DCI,PosicionJugador.DCD};
 	
 	public Equipo(String nombre, ArrayList<Jugador> plantilla) {
 		super();
@@ -14,11 +20,24 @@ public class Equipo {
 		this.plantilla = plantilla;
 	}
 	
-	public Equipo(String nombre,int njugadores) {
+	
+	public Equipo(String nombre,int njugadores) throws MuyPocosJugadoresException {
+		if(njugadores<11) {
+			throw new MuyPocosJugadoresException("No puedes tener menos de 11 jugadores");
+		}
 		this.nombre = nombre;
 		this.setPuntos(0);
 		this.plantilla = new ArrayList<Jugador>();
 		for (int i = 0; i < njugadores; i++) {
+			plantilla.add(new Jugador(posiciones442[i%11],(i<11)));
+		}
+	}	
+	
+	public Equipo(String nombre) {
+		this.nombre = nombre;
+		this.setPuntos(0);
+		this.plantilla = new ArrayList<Jugador>();
+		for (int i = 0; i< 12; i++) {
 			plantilla.add(new Jugador());
 		}
 	}	
@@ -42,9 +61,10 @@ public class Equipo {
 		return puntos;
 	}
 
-	public void setPuntos(int puntos) {
+	protected void setPuntos(int puntos) {
 		this.puntos = puntos;
 	}
+	
 
 	/**
 	 * @return the plantilla
@@ -60,33 +80,60 @@ public class Equipo {
 		this.plantilla = plantilla;
 	}
 
-	public ArrayList<Jugador> getAlineacion(Equipo e){
+	public ArrayList<Jugador> getAlineacion(){
 		ArrayList<Jugador> alineacion =new ArrayList<Jugador>();
 		
-		for(Jugador j : e.getPlantilla()) {
+		for(Jugador j : this.getPlantilla()) {
 			if(j.esTitular()==true) {
 				alineacion.add(j);
 			}
 		}
 		return alineacion;
 	}
-	
-	public void setAlineacion(Equipo e) {
-		ArrayList<Jugador> alineacion =new ArrayList<Jugador>();
-		for(Jugador j : e.getPlantilla()) {
-			if(j.esTitular()==true&&!alineacion.contains(j)) {
-				alineacion.add(j);
-			}else if(j.esTitular()==false){alineacion.remove(j);
-			
+
+	public void setTitular(Jugador j) throws JugadorNoPerteneceAlEquipoException {
+		//Comprobar que j pertenece a mi equipo
+		if(!(this.getPlantilla().contains(j))) {
+			throw new JugadorNoPerteneceAlEquipoException("El jugador no pertenece al equipo");
+		}else {
+			for(Jugador jug : this.getAlineacion()) {
+				if(j.getPosicion().equals(jug.getPosicion())) {
+					jug.setTitular(false);
+					j.setTitular(true);
+				}
 			}
 		}
+		//Si pertenece, buscar al jugador titular actual en la posición de j y ponerle titular=false
+		//A este jugador ponerlo titular
 	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+	
+	 protected void sumarVictoria() {
+		puntos+=3;
+	}
+	 
+	 protected void sumarEmpate() {
+			puntos++;
+		}
+	 
+	
+	public int getGolesAFavor() {
+		return golesAFavor;
+	}
+
+	protected void sumarGolAFavor() {
+		this.golesAFavor++;
+	}
+	public int getGolesEnContra() {
+		return golesEnContra;
+	}
+	protected void sumarGolEnContra() {
+		this.golesEnContra++;
+	}
+
+
 	@Override
 	public String toString() {
-		return "Equipo [nombre=" + nombre + ", puntos=" + puntos + ", plantilla=" + plantilla + "]";
+		return "LOCAL: " + nombre + ", puntos: " + puntos + ", alineacion: " + this.getAlineacion();
 	}
 	
 	
