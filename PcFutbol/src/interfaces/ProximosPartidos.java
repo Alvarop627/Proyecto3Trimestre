@@ -12,11 +12,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 
-import clases.Division;
-import clases.Jornada;
+
 import componentes.BotonMenu;
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableModel;
+
 
 public class ProximosPartidos extends JPanel {
 	private Ventana ventana;

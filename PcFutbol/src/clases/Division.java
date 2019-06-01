@@ -2,16 +2,12 @@ package clases;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
 
-import excepciones.PartidoNoJugadoException;
-import interfaces.ClasificacionJornada;
+import java.util.stream.Collectors;
 
 public class Division {
 	private String nombre;
@@ -178,7 +174,8 @@ public class Division {
 	public Partido[] getUltimaJornadaJugada() {
 		return this.jornadas.get(jornadaActual-1).getPartidos();
 	}
-
+	
+	
 	public void simular() {
 		//System.out.println("--------------------------------------------------------------------------\n"
 		//		+ this.getNombre() + "\n--------------------------------------------------------------------------\n");

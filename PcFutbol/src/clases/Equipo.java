@@ -18,12 +18,12 @@ public class Equipo {
 	private ArrayList<Jugador> plantilla;
 	private static PosicionJugador[] posiciones442 = { PosicionJugador.POR, PosicionJugador.LD, PosicionJugador.LI,
 			PosicionJugador.DFCI, PosicionJugador.DFCD, PosicionJugador.MD, PosicionJugador.MI, PosicionJugador.MCD,
-			PosicionJugador.MCI, PosicionJugador.DFCI, PosicionJugador.DFCD };
+			PosicionJugador.MCI,PosicionJugador.DI, PosicionJugador.DD };
 
 	public Equipo(String nombre, ArrayList<Jugador> plantilla) {
 		super();
 		this.nombre = nombre;
-		this.setPuntos(0);
+		this.setPuntos(0);	
 		this.plantilla = plantilla;
 	}
 
@@ -35,7 +35,9 @@ public class Equipo {
 		this.setPuntos(0);
 		this.plantilla = new ArrayList<Jugador>();
 		for (int i = 0; i < njugadores; i++) {
-			plantilla.add(new Jugador(posiciones442[i % 11], (i < 11)));
+			//System.out.println(nombre+" : "+posiciones442[i % 11]);
+			plantilla.add(new Jugador(posiciones442[i % 11], (i < 12)));
+			
 		}
 	}
 
@@ -44,7 +46,8 @@ public class Equipo {
 		this.setPuntos(0);
 		this.plantilla = new ArrayList<Jugador>();
 		for (int i = 0; i < 12; i++) {
-			plantilla.add(new Jugador());
+			//System.out.println(nombre+" : "+posiciones442[i % 11]);
+			plantilla.add(new Jugador(posiciones442[i % 11], (i < 12)));
 		}
 	}
 	

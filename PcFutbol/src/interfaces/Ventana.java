@@ -1,5 +1,7 @@
 package interfaces;
 
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JTable;
@@ -14,6 +16,7 @@ import excepciones.MuyPocosJugadoresException;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Rectangle;
+import java.io.File;
 import java.util.ArrayList;
 
 public class Ventana extends JFrame {
@@ -27,16 +30,42 @@ public class Ventana extends JFrame {
 	private Division primera;
 	private Division segunda;
 	private Division tercera;
+	protected Clip sonido;
 
 	public Ventana() throws MuyPocosJugadoresException {
 		super();
 		setUndecorated(true);
-		ecn = new EligeCargarNueva(this,"../imagenes/pcfutbolmini.jpg");
+		ecn = new EligeCargarNueva(this,"../imagenes/pcfutbol.jpg");
+		
 		this.setTitle("PC Futbol Mini");
 		// this.setSize(400, 400);
 		this.setContentPane(ecn);
 		this.setExtendedState(MAXIMIZED_BOTH);
+		
+try {
+            
+            // Se obtiene un Clip de sonido
+            sonido = AudioSystem.getClip();
+            
+            // Se carga con un fichero wav
+            sonido.open(AudioSystem.getAudioInputStream(new File("src/audio/himnoChampions.wav")));
+            
+            // Comienza la reproducción
+            sonido.start();
+            
+            // Espera mientras se esté reproduciendo.
+            while (sonido.isRunning())
+                Thread.sleep(1000);
+            	sonido.loop(100);
+            //Se cierra el clip.
+            //sonido.close();
+        } catch (Exception e) {
+            System.out.println("" + e);
+        }
+		
 
+		
+		
 		Equipo astonBirras = new Equipo("Aston Birras", 11);
 		Equipo nottingham = new Equipo("Nottingham Prisa", 11);
 		Equipo realSuciedad = new Equipo("Real Suciedad", 11);
@@ -109,7 +138,9 @@ public class Ventana extends JFrame {
 		primera = new Division("Primera Division", equiposPrimera);
 		segunda = new Division("Segunda Division", equiposSegunda);
 		tercera = new Division("Tercera Division", equiposTercera);
-
+		selEq = new SeleccionaEquipo(this,"../imagenes/futbol2.jpg");
+		clasificacion = new ClasificacionJornada(this,"../imagenes/futbol2.jpg");
+		
 		this.setVisible(true);
 
 	}
@@ -209,91 +240,7 @@ public class Ventana extends JFrame {
 		return ultJor;
 	}
 
-	public JTable getClasificacionJornada(Division d) {
-		JTable table = new JTable();
-		table.setBounds(10, 48, 430, 176);
-		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.setModel(new DefaultTableModel(new Object[][] {
-				{ "<html><b>NOMBRE</html>", "<html><b>PJ</html>", "<html><b>PTS</html>", "<html><b>V</html>",
-						"<html><b>E</html>", "<html><b>D</html>", "<html><b>GF</html>", "<html><b>GC</html>",
-						"<html><b>DG</html>" },
-				{ d.getClasificacion().get(0).getNombre(), d.getClasificacion().get(0).getPartidosJugados(),
-						d.getClasificacion().get(0).getPuntos(), d.getClasificacion().get(0).getVictorias(),
-						d.getClasificacion().get(0).getEmpates(), d.getClasificacion().get(0).getDerrotas(),
-						d.getClasificacion().get(0).getGolesAFavor(), d.getClasificacion().get(0).getGolesEnContra(),
-						d.getClasificacion().get(0).getDifGoles() },
-				{ d.getClasificacion().get(1).getNombre(), d.getClasificacion().get(1).getPartidosJugados(),
-						d.getClasificacion().get(1).getPuntos(), d.getClasificacion().get(1).getVictorias(),
-						d.getClasificacion().get(1).getEmpates(), d.getClasificacion().get(1).getDerrotas(),
-						d.getClasificacion().get(1).getGolesAFavor(), d.getClasificacion().get(1).getGolesEnContra(),
-						d.getClasificacion().get(1).getDifGoles() },
-				{ d.getClasificacion().get(2).getNombre(), d.getClasificacion().get(2).getPartidosJugados(),
-						d.getClasificacion().get(2).getPuntos(), d.getClasificacion().get(2).getVictorias(),
-						d.getClasificacion().get(2).getEmpates(), d.getClasificacion().get(2).getDerrotas(),
-						d.getClasificacion().get(2).getGolesAFavor(), d.getClasificacion().get(2).getGolesEnContra(),
-						d.getClasificacion().get(2).getDifGoles() },
-				{ d.getClasificacion().get(3).getNombre(), d.getClasificacion().get(3).getPartidosJugados(),
-						d.getClasificacion().get(3).getPuntos(), d.getClasificacion().get(3).getVictorias(),
-						d.getClasificacion().get(3).getEmpates(), d.getClasificacion().get(3).getDerrotas(),
-						d.getClasificacion().get(3).getGolesAFavor(), d.getClasificacion().get(3).getGolesEnContra(),
-						d.getClasificacion().get(3).getDifGoles() },
-				{ d.getClasificacion().get(4).getNombre(), d.getClasificacion().get(4).getPartidosJugados(),
-						d.getClasificacion().get(4).getPuntos(), d.getClasificacion().get(4).getVictorias(),
-						d.getClasificacion().get(4).getEmpates(), d.getClasificacion().get(4).getDerrotas(),
-						d.getClasificacion().get(4).getGolesAFavor(), d.getClasificacion().get(4).getGolesEnContra(),
-						d.getClasificacion().get(4).getDifGoles() },
-				{ d.getClasificacion().get(5).getNombre(), d.getClasificacion().get(5).getPartidosJugados(),
-						d.getClasificacion().get(5).getPuntos(), d.getClasificacion().get(5).getVictorias(),
-						d.getClasificacion().get(5).getEmpates(), d.getClasificacion().get(5).getDerrotas(),
-						d.getClasificacion().get(5).getGolesAFavor(), d.getClasificacion().get(5).getGolesEnContra(),
-						d.getClasificacion().get(5).getDifGoles() },
-				{ d.getClasificacion().get(6).getNombre(), d.getClasificacion().get(6).getPartidosJugados(),
-						d.getClasificacion().get(6).getPuntos(), d.getClasificacion().get(6).getVictorias(),
-						d.getClasificacion().get(6).getEmpates(), d.getClasificacion().get(6).getDerrotas(),
-						d.getClasificacion().get(6).getGolesAFavor(), d.getClasificacion().get(6).getGolesEnContra(),
-						d.getClasificacion().get(6).getDifGoles() },
-				{ d.getClasificacion().get(7).getNombre(), d.getClasificacion().get(7).getPartidosJugados(),
-						d.getClasificacion().get(7).getPuntos(), d.getClasificacion().get(7).getVictorias(),
-						d.getClasificacion().get(7).getEmpates(), d.getClasificacion().get(7).getDerrotas(),
-						d.getClasificacion().get(7).getGolesAFavor(), d.getClasificacion().get(7).getGolesEnContra(),
-						d.getClasificacion().get(7).getDifGoles() },
-				{ d.getClasificacion().get(8).getNombre(), d.getClasificacion().get(8).getPartidosJugados(),
-						d.getClasificacion().get(8).getPuntos(), d.getClasificacion().get(8).getVictorias(),
-						d.getClasificacion().get(8).getEmpates(), d.getClasificacion().get(8).getDerrotas(),
-						d.getClasificacion().get(8).getGolesAFavor(), d.getClasificacion().get(8).getGolesEnContra(),
-						d.getClasificacion().get(8).getDifGoles() },
-				{ d.getClasificacion().get(9).getNombre(), d.getClasificacion().get(9).getPartidosJugados(),
-						d.getClasificacion().get(9).getPuntos(), d.getClasificacion().get(9).getVictorias(),
-						d.getClasificacion().get(9).getEmpates(), d.getClasificacion().get(9).getDerrotas(),
-						d.getClasificacion().get(9).getGolesAFavor(), d.getClasificacion().get(9).getGolesEnContra(),
-						d.getClasificacion().get(9).getDifGoles() }, },
-				new String[] { "Nombre", "PJ", "PTS", "V", "E", "D", "GF", "GC", "DG" }) {
-			Class[] columnTypes = new Class[] { String.class, Integer.class, Integer.class, Integer.class,
-					Integer.class, Integer.class, Integer.class, Integer.class, Integer.class };
-
-			public Class getColumnClass(int columnIndex) {
-				return columnTypes[columnIndex];
-			}
-		});
-		table.getColumnModel().getColumn(0).setPreferredWidth(233);
-		table.getColumnModel().getColumn(1).setPreferredWidth(30);
-		table.getColumnModel().getColumn(2).setPreferredWidth(44);
-		table.getColumnModel().getColumn(3).setPreferredWidth(30);
-		table.getColumnModel().getColumn(4).setPreferredWidth(30);
-		table.getColumnModel().getColumn(5).setPreferredWidth(30);
-		table.getColumnModel().getColumn(6).setPreferredWidth(30);
-		table.getColumnModel().getColumn(7).setPreferredWidth(30);
-		table.getColumnModel().getColumn(8).setPreferredWidth(30);
-
-		GridBagConstraints gbc_table = new GridBagConstraints();
-		gbc_table.fill = GridBagConstraints.BOTH;
-		gbc_table.insets = new Insets(0, 0, 5, 0);
-		gbc_table.gridwidth = 4;
-		gbc_table.gridx = 0;
-		gbc_table.gridy = 1;
-		add(table);
-		return table;
-	}
+	
 
 	public void irAClasificacionJornada() {
 		// 1 - Inicializar login si no lo está ya
@@ -442,5 +389,29 @@ public class Ventana extends JFrame {
 	public  Alineacion getAlineacion() {
 		return alineacion;
 	}
+	
+	/**
+	 * @return the sonido
+	 */
+	public Clip getSonido() {
+		return sonido;
+	}
 
+	public void descenderEquipos(Division d, Division d2) {
+		Equipo ultimo = d.getClasificacion().get(9);
+		Equipo penultimo = d.getClasificacion().get(8);
+		d2.getEquipos().add(ultimo);
+		d2.getEquipos().add(penultimo);
+		d.getEquipos().remove(ultimo);
+		d.getEquipos().remove(penultimo);
+	}
+	
+	public void ascenderEquipos(Division d, Division d2) {
+		Equipo primero = d.getClasificacion().get(0);
+		Equipo segundo = d.getClasificacion().get(1);
+		d2.getEquipos().add(primero);
+		d2.getEquipos().add(segundo);
+		d.getEquipos().remove(primero);
+		d.getEquipos().remove(segundo);
+	}
 }

@@ -208,10 +208,7 @@ public class Jugador {
 
 	@Override
 	public String toString() {
-		return "\n------------------------------------------------------------------------------------------------------\n"
-				+ "nombre=" + nombre + ", apellidos=" + apellidos + ", precio=" + this.getPrecio() + ", sueldo="
-				+ sueldo + ", fuerza=" + fuerza + ", velocidad=" + velocidad + ", resistencia=" + resistencia
-				+ ", tecnica=" + tecnica + ", titular=" + titular + "\n";
+		return nombre + " " + apellidos +" "+"F:"+fuerza+"V:"+velocidad+"R:"+resistencia+"T:"+tecnica;
 	}
 
 }
