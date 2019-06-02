@@ -5,26 +5,36 @@ import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.JLabel;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.awt.Font;
 import java.awt.Graphics;
-
-import javax.swing.SwingConstants;
 
 import componentes.BotonMenu;
 import componentes.MiLabel;
 import componentes.MiPanel;
 
 import javax.swing.border.LineBorder;
+
+import clases.Division;
+import clases.Equipo;
+import clases.Jornada;
+import clases.Jugador;
+import clases.Partido;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Toolkit;
-import java.awt.ComponentOrientation;
 import java.awt.Cursor;
+import javax.swing.JProgressBar;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 public class EligeCargarNueva extends JPanel{
 	private Ventana ventana;
@@ -111,11 +121,13 @@ public class EligeCargarNueva extends JPanel{
 		add(lblSubtitulo, gbc_lblSubtitulo);
 		
 		BotonMenu btnCargar = new BotonMenu("Cargar Partida");
+		btnCargar.setEnabled(false);
 		btnCargar.setBorder(new LineBorder(new Color(0, 0, 0)));
 		btnCargar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				ventana.irAClasificacionJornada();
+				//ventana.irAClasificacionJornada();
+				JOptionPane.showMessageDialog(ventana, "Funcion no disponible, actualmente en desarrollo");
 			}
 });
 		GridBagConstraints gbc_btnCargar = new GridBagConstraints();
@@ -125,6 +137,7 @@ public class EligeCargarNueva extends JPanel{
 		gbc_btnCargar.gridy = 7;
 		add(btnCargar, gbc_btnCargar);
 		
+		
 		BotonMenu btnNuevaPartida = new BotonMenu("Nueva Partida",135, 206, 250);
 		btnNuevaPartida.setBorder(new LineBorder(new Color(0, 0, 0)));
 		btnNuevaPartida.setBackground(new Color(135, 206, 250));
@@ -132,6 +145,53 @@ public class EligeCargarNueva extends JPanel{
 		btnNuevaPartida.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
+				JOptionPane.showMessageDialog(ventana, "Iniciando...Tiempo de espera estimado: 1min");
+				try {
+					Connection con;
+					con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/pcfutbolmini", "localhost", "localhost");
+					Statement smt=con.createStatement();
+					String borrarJugadores = "Delete from jugadores where id!=-1;";
+					String borrarEquipos = "Delete from equipos where nombre!='-';";
+					String borrarPartidos = "Delete from partidos where jornada!=-1;";
+					String autoInc = "ALTER TABLE jugadores AUTO_INCREMENT = 1";
+					smt.executeUpdate(borrarJugadores);
+					smt.executeUpdate(borrarEquipos);
+					smt.executeUpdate(borrarPartidos);
+					smt.executeUpdate(autoInc);
+					PreparedStatement smt7 = con.prepareStatement("insert into equipos values(?,?,?,?,?,?,?,?,?,?)");
+					PreparedStatement smt8 = con.prepareStatement("insert into jugadores values(?,?,?,?,?,?,?,?,?)");
+					PreparedStatement smt9 = con.prepareStatement("insert into partidos values(?,?,?,?,?,?)");
+					for (Division d : ventana.getDivisiones()) {
+						for(Jornada j : d.getJornadas()) {
+							for(Partido p: j.getPartidos()) {
+								String partidos = "INSERT INTO partidos values(" + j.getNumJornada() + ",'" + p.getLocal().getNombre() + "','" + p.getVisitante().getNombre()
+										+ "'," + p.getGolesLocal()+"," + p.getGolesVisitante()+","+0+ ");";
+							smt9.executeUpdate(partidos);
+							}
+						}
+						for (Equipo e : d.getEquipos()) {
+							
+							String SQL = "INSERT INTO equipos values('" + e.getNombre() + "'," + e.getPuntos() + ","
+									+ e.getGolesAFavor() + "," + e.getGolesEnContra() + "," + e.getPartidosJugados() + ","
+									+ e.getVictorias() + "," + e.getEmpates() + "," + e.getDerrotas() + ",'" + d.getNombre()
+									+ "'," + 0 + ");";
+							smt7.executeUpdate(SQL);
+							for (Jugador j : e.getPlantilla()) {
+								
+								String SQL2 = "INSERT INTO jugadores (nombre,apellidos,fuerza,velocidad,resistencia,tecnica,titular,posicion,nombreEquipo) values('"
+										+ j.getNombre() + "','" + j.getApellidos() + "'," + j.getFuerza() + ","
+										+ j.getVelocidad() + "," + j.getResistencia() + "," + j.getTecnica() + ","
+										+ j.esTitular() + ",'" + j.getPosicion() + "','" + e.getNombre() + "');";
+								smt8.executeUpdate(SQL2);
+							}
+						}
+					}
+					ventana.LeerTablaBaseDatos();
+					con.close();
+
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
 				ventana.irASeleccionaEquipo();
 			}
 		});
@@ -141,6 +201,8 @@ public class EligeCargarNueva extends JPanel{
 		gbc_btnNuevaPartida.gridx = 5;
 		gbc_btnNuevaPartida.gridy = 8;
 		add(btnNuevaPartida, gbc_btnNuevaPartida);
+		
+		
 		
 		BotonMenu btnSalirDelJuego = new BotonMenu("Salir del juego",139, 0, 0);
 		btnSalirDelJuego.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 11));

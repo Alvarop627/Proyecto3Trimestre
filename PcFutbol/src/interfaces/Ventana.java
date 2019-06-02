@@ -11,61 +11,41 @@ import javax.swing.table.DefaultTableModel;
 import clases.Division;
 import clases.Equipo;
 import clases.Jornada;
+import clases.Jugador;
 import excepciones.MuyPocosJugadoresException;
 
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 public class Ventana extends JFrame {
 	private EligeCargarNueva ecn;
-	private  ClasificacionJornada clasificacion;
-	private  SeleccionaEquipo selEq;
-	private  ProximosPartidos proxPart;
-	private  Resultados resultados;
-	private  Alineacion alineacion;
+	private ClasificacionJornada clasificacion;
+	private SeleccionaEquipo selEq;
+	private ProximosPartidos proxPart;
+	private Resultados resultados;
+	Alineacion alineacion;
 	private Equipo miEquipo;
 	private Division primera;
 	private Division segunda;
 	private Division tercera;
 	protected Clip sonido;
+	public ArrayList<Division> divisiones;
 
 	public Ventana() throws MuyPocosJugadoresException {
 		super();
-		setUndecorated(true);
-		ecn = new EligeCargarNueva(this,"../imagenes/pcfutbol.jpg");
-		
-		this.setTitle("PC Futbol Mini");
-		// this.setSize(400, 400);
-		this.setContentPane(ecn);
-		this.setExtendedState(MAXIMIZED_BOTH);
-		
-try {
-            
-            // Se obtiene un Clip de sonido
-            sonido = AudioSystem.getClip();
-            
-            // Se carga con un fichero wav
-            sonido.open(AudioSystem.getAudioInputStream(new File("src/audio/himnoChampions.wav")));
-            
-            // Comienza la reproducción
-            sonido.start();
-            
-            // Espera mientras se esté reproduciendo.
-            while (sonido.isRunning())
-                Thread.sleep(1000);
-            	sonido.loop(100);
-            //Se cierra el clip.
-            //sonido.close();
-        } catch (Exception e) {
-            System.out.println("" + e);
-        }
-		
 
-		
-		
 		Equipo astonBirras = new Equipo("Aston Birras", 11);
 		Equipo nottingham = new Equipo("Nottingham Prisa", 11);
 		Equipo realSuciedad = new Equipo("Real Suciedad", 11);
@@ -138,11 +118,46 @@ try {
 		primera = new Division("Primera Division", equiposPrimera);
 		segunda = new Division("Segunda Division", equiposSegunda);
 		tercera = new Division("Tercera Division", equiposTercera);
-		selEq = new SeleccionaEquipo(this,"../imagenes/futbol2.jpg");
-		clasificacion = new ClasificacionJornada(this,"../imagenes/futbol2.jpg");
-		
-		this.setVisible(true);
+		divisiones = new ArrayList<Division>();
+		divisiones.add(primera);
+		divisiones.add(segunda);
+		divisiones.add(tercera);
 
+		setUndecorated(true);
+		ecn = new EligeCargarNueva(this, "../imagenes/pcfutbol.jpg");
+
+		this.setTitle("PC Futbol Mini");
+		// this.setSize(400, 400);
+		this.setContentPane(ecn);
+		this.setExtendedState(MAXIMIZED_BOTH);
+
+		try {
+
+			// Se obtiene un Clip de sonido
+			sonido = AudioSystem.getClip();
+
+			// Se carga con un fichero wav
+			sonido.open(AudioSystem.getAudioInputStream(new File("src/audio/himnoChampions.wav")));
+
+			// Comienza la reproducción
+			sonido.start();
+
+			// Espera mientras se esté reproduciendo.
+			while (sonido.isRunning())
+				Thread.sleep(1000);
+			sonido.loop(100);
+			// Se cierra el clip.
+			// sonido.close();
+		} catch (Exception e) {
+			System.out.println("" + e);
+		}
+
+		selEq = new SeleccionaEquipo(this, "../imagenes/futbol2.jpg");
+		clasificacion = new ClasificacionJornada(this, "../imagenes/futbol2.jpg");
+		proxPart = new ProximosPartidos(this, "../imagenes/futbol2.jpg");
+
+		this.setVisible(true);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	/**
@@ -153,94 +168,12 @@ try {
 	}
 
 	/**
-	 * @param miEquipo the miEquipo to set
+	 * @param miEquipo
+	 *            the miEquipo to set
 	 */
 	public void setMiEquipo(Equipo miEquipo) {
 		this.miEquipo = miEquipo;
 	}
-
-	public JTable getProximaJornada(Division d) {
-		JTable proxJor = new JTable();
-		proxJor.setModel(
-				new DefaultTableModel(
-						new Object[][] {
-								{ d.getJornadas().get(d.getJornadaActual()).getPartidos()[0].getLocal().getNombre(),
-										d.getJornadas().get(d.getJornadaActual()).getPartidos()[0].getGolesLocal(),
-										d.getJornadas().get(d.getJornadaActual()).getPartidos()[0].getGolesVisitante(),
-										d.getJornadas().get(d.getJornadaActual()).getPartidos()[0].getVisitante()
-												.getNombre() },
-								{ d.getJornadas().get(d.getJornadaActual()).getPartidos()[1].getLocal().getNombre(),
-										d.getJornadas().get(d.getJornadaActual()).getPartidos()[1].getGolesLocal(),
-										d.getJornadas().get(d.getJornadaActual()).getPartidos()[1].getGolesVisitante(),
-										d.getJornadas().get(d.getJornadaActual()).getPartidos()[1].getVisitante()
-												.getNombre() },
-								{ d.getJornadas().get(d.getJornadaActual()).getPartidos()[2].getLocal().getNombre(),
-										d.getJornadas().get(d.getJornadaActual()).getPartidos()[2].getGolesLocal(),
-										d.getJornadas().get(d.getJornadaActual()).getPartidos()[2].getGolesVisitante(),
-										d.getJornadas().get(d.getJornadaActual()).getPartidos()[2].getVisitante()
-												.getNombre() },
-								{ d.getJornadas().get(d.getJornadaActual()).getPartidos()[3].getLocal().getNombre(),
-										d.getJornadas().get(d.getJornadaActual()).getPartidos()[3].getGolesLocal(),
-										d.getJornadas().get(d.getJornadaActual()).getPartidos()[3].getGolesVisitante(),
-										d.getJornadas().get(d.getJornadaActual()).getPartidos()[3].getVisitante()
-												.getNombre() },
-								{ d.getJornadas().get(d.getJornadaActual()).getPartidos()[4].getLocal().getNombre(),
-										d.getJornadas().get(d.getJornadaActual()).getPartidos()[4].getGolesLocal(),
-										d.getJornadas().get(d.getJornadaActual()).getPartidos()[4].getGolesVisitante(),
-										d.getJornadas().get(d.getJornadaActual()).getPartidos()[4].getVisitante()
-												.getNombre() }, },
-						new String[] { "Local", "Goles Local", "Goles Visitante", "Visitante" }) {
-					Class[] columnTypes = new Class[] { String.class, int.class, int.class, String.class };
-
-					public Class getColumnClass(int columnIndex) {
-						return columnTypes[columnIndex];
-					}
-				});
-		// proxJor.setBounds(75, 99, 280, 80);
-		return proxJor;
-	}
-
-	public JTable getUltimaJornada(Division d) {
-		JTable ultJor = new JTable();
-		ultJor.setModel(new DefaultTableModel(
-				new Object[][] {
-						{ d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[0].getLocal().getNombre(),
-								d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[0].getGolesLocal(),
-								d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[0].getGolesVisitante(),
-								d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[0].getVisitante()
-										.getNombre() },
-						{ d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[1].getLocal().getNombre(),
-								d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[1].getGolesLocal(),
-								d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[1].getGolesVisitante(),
-								d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[1].getVisitante()
-										.getNombre() },
-						{ d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[2].getLocal().getNombre(),
-								d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[2].getGolesLocal(),
-								d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[2].getGolesVisitante(),
-								d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[2].getVisitante()
-										.getNombre() },
-						{ d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[3].getLocal().getNombre(),
-								d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[3].getGolesLocal(),
-								d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[3].getGolesVisitante(),
-								d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[3].getVisitante()
-										.getNombre() },
-						{ d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[4].getLocal().getNombre(),
-								d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[4].getGolesLocal(),
-								d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[4].getGolesVisitante(),
-								d.getJornadas().get(d.getJornadaActual() - 1).getPartidos()[4].getVisitante()
-										.getNombre() }, },
-				new String[] { "Local", "Goles Local", "Goles Visitante", "Visitante" }) {
-			Class[] columnTypes = new Class[] { String.class, int.class, int.class, String.class };
-
-			public Class getColumnClass(int columnIndex) {
-				return columnTypes[columnIndex];
-			}
-		});
-		// ultJor.setBounds(75, 99, 280, 80);
-		return ultJor;
-	}
-
-	
 
 	public void irAClasificacionJornada() {
 		// 1 - Inicializar login si no lo está ya
@@ -344,19 +277,19 @@ try {
 		return tercera;
 	}
 
-	public  void repintarClasificaciones() {
+	public void repintarClasificaciones() {
 		clasificacion.removeAll();
 		clasificacion.initComponents();
 
 	}
 
-	public  void repintarProximosPartidos() {
+	public void repintarProximosPartidos() {
 		proxPart.removeAll();
 		proxPart.initComponents();
 
 	}
 
-	public  void repintarResultados() {
+	public void repintarResultados() {
 		resultados.removeAll();
 		resultados.initComponents();
 
@@ -365,14 +298,14 @@ try {
 	/**
 	 * @return the clasificacion
 	 */
-	public  ClasificacionJornada getClasificacion() {
+	public ClasificacionJornada getClasificacion() {
 		return clasificacion;
 	}
 
 	/**
 	 * @return the proxPart
 	 */
-	public  ProximosPartidos getProxPart() {
+	public ProximosPartidos getProxPart() {
 		return proxPart;
 	}
 
@@ -386,15 +319,23 @@ try {
 	/**
 	 * @return the alineacion
 	 */
-	public  Alineacion getAlineacion() {
+	public Alineacion getAlineacion() {
 		return alineacion;
 	}
-	
+
 	/**
 	 * @return the sonido
 	 */
 	public Clip getSonido() {
 		return sonido;
+	}
+
+	public void crearInterfazAlineacion() {
+		this.alineacion = new Alineacion(this, "../imagenes/futbol2.jpg");
+	}
+
+	public void crearInterfazResultados() {
+		this.resultados = new Resultados(this, "../imagenes/futbol2.jpg");
 	}
 
 	public void descenderEquipos(Division d, Division d2) {
@@ -405,7 +346,7 @@ try {
 		d.getEquipos().remove(ultimo);
 		d.getEquipos().remove(penultimo);
 	}
-	
+
 	public void ascenderEquipos(Division d, Division d2) {
 		Equipo primero = d.getClasificacion().get(0);
 		Equipo segundo = d.getClasificacion().get(1);
@@ -413,5 +354,117 @@ try {
 		d2.getEquipos().add(segundo);
 		d.getEquipos().remove(primero);
 		d.getEquipos().remove(segundo);
+	}
+
+	/**
+	 * @return the divisiones
+	 */
+	public ArrayList<Division> getDivisiones() {
+		return divisiones;
+	}
+	
+	public void escribirClasificacion() {
+		String titulo = "CLASIFICACIÓN:\n" + "Pos " + "Nombre Puntos\n";
+		String clasificaciontxt="";
+		String clasificacionFinal="";
+		for (Division d:divisiones) {
+			
+		for (Equipo e : d.getClasificacion()) {
+			String espacio = "";
+			String espacioPosNombre = "    ";
+			for (int i = 0; i < (25 - e.getNombre().length()); i++) {
+				espacio += " ";
+				if (d.getClasificacion().indexOf(e) == 9) {
+					espacioPosNombre = "   ";
+				}
+			}
+			clasificaciontxt += (d.getClasificacion().indexOf(e) + 1) + espacioPosNombre + e.getNombre() + espacio
+					+ e.getPuntos() + "\n";
+		}
+		clasificacionFinal+="\n"+titulo+clasificaciontxt+"\n";}
+
+		try {
+			String ruta = "./src/interfaces/clasificacion.txt";
+
+			File f = new File(ruta);
+
+			FileOutputStream fs;
+
+			fs = new FileOutputStream(f);
+
+			ObjectOutputStream os;
+
+			os = new ObjectOutputStream(fs);
+			
+			os.writeObject(clasificacionFinal);
+
+			System.out.println("El archivo se ha creado");
+
+			os.flush();
+
+			os.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	public void LeerTablaBaseDatos() {
+		Statement sql = null;
+		ResultSet rs = null;
+		String jugadores = "";
+		String columnas = "\nID NOMBRE APELLIDOS FZA VEL RES TEC POS EQUIPO\n";
+		
+		try {
+			Connection con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/pcfutbolmini", "localhost",
+					"localhost");
+			System.out.println("Conexión establecida");
+
+			sql = con.createStatement();
+
+			rs = sql.executeQuery(
+					"SELECT id,nombre,apellidos,fuerza,velocidad,resistencia,tecnica,posicion,nombreEquipo FROM jugadores");
+
+			System.out.println("CONSULTA EJECUTADA");
+
+			boolean r = rs.next();
+			while (r) {
+				jugadores += rs.getInt("id") + "  " + rs.getString("nombre") + " " + rs.getString("apellidos") + " "
+						+ rs.getInt("fuerza") + " " + rs.getInt("velocidad") + " " + rs.getInt("resistencia") + " "
+						+ rs.getInt("tecnica") + " " + rs.getString("posicion") + " " + rs.getString("nombreEquipo")
+						+ "\n";
+				r = rs.next();
+			}
+
+			String ruta = "./src/interfaces/jugadores.txt";
+			
+			File f = new File(ruta);
+
+			FileOutputStream fs;
+
+			fs = new FileOutputStream(f);
+
+			ObjectOutputStream os;
+
+			os = new ObjectOutputStream(fs);
+			String archivo = columnas+jugadores;
+			os.writeObject(archivo);
+
+			System.out.println("El archivo se ha creado");
+
+			os.flush();
+
+			os.close();
+
+			con.close();
+			System.out.println("CERRADA LA CONEXION");
+		} catch (SQLException e) {
+			System.out.println("ERROR AL EJECUTAR LA SENTENCIA SQL");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 }

@@ -1,5 +1,9 @@
 package clases;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -18,7 +22,7 @@ public class Division {
 
 	public Division(String nombre, ArrayList<Equipo> equipos) {
 		super();
-		this.jornadaActual=0;
+		this.jornadaActual = 0;
 		this.nombre = nombre;
 		this.jornadas = new ArrayList<Jornada>();
 		this.equipos = equipos;
@@ -104,7 +108,7 @@ public class Division {
 	 * @return the clasificacion
 	 */
 	public List<Equipo> getClasificacion() {
-		// String clasificacion = "CLASIFICACIÓN:\n" + "Pos " + "Nombre Puntos\n";
+		
 		Comparator<Equipo> comparator = new Comparator<Equipo>() {
 			public int compare(Equipo a, Equipo b) {
 
@@ -125,14 +129,8 @@ public class Division {
 		};
 		List<Equipo> clasificacion = this.getEquipos().stream().sorted(comparator.reversed())
 				.collect(Collectors.toList());
-		//System.out.println(clasificacion);
-		/*
-		 * for (Equipo e : clasificacion) { String espacio = ""; String
-		 * espacioPosNombre="    "; for (int i = 0; i < (25 - e.getNombre().length());
-		 * i++) { espacio += " "; if(clasificacion.indexOf(e)==9) {
-		 * espacioPosNombre="   "; } } //clasificacion+=(listaOrdenada.indexOf(e)+1)+
-		 * espacioPosNombre+ e.getNombre() + espacio + e.getPuntos() + "\n"; }
-		 */
+
+		
 		return clasificacion;
 	}
 
@@ -161,24 +159,33 @@ public class Division {
 	public String toString() {
 		return this.getNombre() + "\n" + jornadas.toString() + ", clasificacion : " + clasificacion;
 	}
-	
+
 	public void simularSiguienteJornada() {
 		this.jornadas.get(this.jornadaActual).simularJornada();
 		jornadaActual++;
 	}
-	
-	/*public String getProximaJornada() {
-		return this.jornadas.get(jornadaActual).getNombresPartidos();
-	}*/
-	
+
+	/*
+	 * public String getProximaJornada() { return
+	 * this.jornadas.get(jornadaActual).getNombresPartidos(); }
+	 */
+
 	public Partido[] getUltimaJornadaJugada() {
-		return this.jornadas.get(jornadaActual-1).getPartidos();
+		return this.jornadas.get(jornadaActual - 1).getPartidos();
 	}
-	
-	
+
+	/**
+	 * @param jornadaActual
+	 *            the jornadaActual to set
+	 */
+	public void reiniciarJornadaActual() {
+		this.jornadaActual = 0;
+	}
+
 	public void simular() {
-		//System.out.println("--------------------------------------------------------------------------\n"
-		//		+ this.getNombre() + "\n--------------------------------------------------------------------------\n");
+		// System.out.println("--------------------------------------------------------------------------\n"
+		// + this.getNombre() +
+		// "\n--------------------------------------------------------------------------\n");
 		for (Jornada j : this.getJornadas()) {
 			/*
 			 * System.out.
@@ -188,12 +195,14 @@ public class Division {
 			 * );
 			 */
 			j.simularJornada();
-			
+
 			/*
 			 * System.out.println("RESULTADOS:\n" + j.getNombresPartidos());
 			 * System.out.println(this.getClasificacion());
 			 */
 		}
 	}
+	
+	
 
 }

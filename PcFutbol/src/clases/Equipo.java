@@ -46,8 +46,7 @@ public class Equipo {
 		this.setPuntos(0);
 		this.plantilla = new ArrayList<Jugador>();
 		for (int i = 0; i < 12; i++) {
-			//System.out.println(nombre+" : "+posiciones442[i % 11]);
-			plantilla.add(new Jugador(posiciones442[i % 11], (i < 12)));
+			plantilla.add(new Jugador(posiciones442[i % 12], (i < 12)));
 		}
 	}
 	

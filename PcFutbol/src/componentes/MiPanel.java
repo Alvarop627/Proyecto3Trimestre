@@ -10,7 +10,7 @@ import interfaces.Ventana;
 
 public class MiPanel extends JPanel {
 	ImageIcon imagen;
-	private Ventana ventana;
+	Ventana ventana;
 	public MiPanel() {
 
 	}
@@ -19,11 +19,6 @@ public class MiPanel extends JPanel {
 		this.ventana=v;	
 		imagen = new ImageIcon(getClass().getResource(rutaImagen));
 		setSize(imagen.getIconWidth(),imagen.getIconHeight());
-		initComponents();
-	}
-	private void initComponents() {
-		// TODO Auto-generated method stub
-		
 	}
 	protected void paintComponent(Graphics g) {
 		Dimension d = getSize();
